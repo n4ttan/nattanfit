@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#3b82f6" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="NattanFit" />
+  <meta name="description" content="App de treino personalizado para Nattan — hipertrofia e correção postural" />
+  <title>Nattan Maromba</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ========== HEADER ========== -->
+  <header id="app-header">
+    <span id="header-title">Nattan Maromba 💪</span>
+    <span id="header-timer"></span>
+    <button id="btn-settings" aria-label="Configurações">⚙️</button>
+  </header>
+
+  <!-- ========== CONTEÚDO PRINCIPAL ========== -->
+  <main id="app-content">
+
+    <!-- ===== TELA 1: DASHBOARD ===== -->
+    <section id="screen-dashboard" class="screen active">
+      <p class="greeting">Bom treino, Cuiudo! 👊</p>
+
+      <!-- Treino de hoje -->
+      <div class="card today-workout-card" id="today-workout-card">
+        <div class="card-title">TREINO DE HOJE</div>
+        <div class="day-name" id="today-day-name">—</div>
+        <div class="muscle-groups" id="today-muscle-groups">—</div>
+        <button class="btn btn-primary btn-full" id="btn-start-today">Iniciar Treino de Hoje</button>
+      </div>
+
+      <!-- XP / Nível -->
+      <div class="card xp-card">
+        <div class="card-title">PROGRESSO</div>
+        <div class="level-name" id="dash-level-name">Frango Consciente 🐔</div>
+        <div class="xp-numbers" id="dash-xp-numbers">0 XP • Próximo nível: 100 XP</div>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar-fill" id="dash-xp-bar" style="width:0%"></div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-row">
+        <div class="stat-box">
+          <div class="stat-val" id="dash-streak">0</div>
+          <div class="stat-lbl">🔥 Sequência</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val" id="dash-weight">77</div>
+          <div class="stat-lbl">⚖️ kg</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val" id="dash-week">0/5</div>
+          <div class="stat-lbl">📅 Semana</div>
+        </div>
+      </div>
+
+      <!-- Próximo treino -->
+      <div class="card" id="next-workout-card">
+        <div class="card-title">PRÓXIMO TREINO</div>
+        <div id="next-day-name" style="font-weight:700;font-size:16px;color:var(--text-primary)">—</div>
+        <div id="next-muscle-groups" style="font-size:13px;color:var(--text-secondary);margin-top:4px">—</div>
+      </div>
+
+      <!-- Registrar peso -->
+      <div class="card">
+        <div class="card-title">REGISTRAR PESO</div>
+        <div class="weight-input-row">
+          <input type="number" id="dash-weight-input" placeholder="Ex: 77.5" step="0.1" min="40" max="200" />
+          <button class="btn btn-ghost" id="btn-save-weight">Salvar</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== TELA 2: TREINO ===== -->
+    <section id="screen-treino" class="screen">
+      <!-- Seletor de dias -->
+      <div class="day-selector" id="day-selector">
+        <button class="day-pill" data-day="0">Seg</button>
+        <button class="day-pill" data-day="1">Ter</button>
+        <button class="day-pill" data-day="2">Qua</button>
+        <button class="day-pill" data-day="3">Qui</button>
+        <button class="day-pill" data-day="4">Sex</button>
+        <button class="day-pill" data-day="5">Sáb</button>
+        <button class="day-pill" data-day="6">Dom</button>
+      </div>
+
+      <!-- Conteúdo dinâmico do dia selecionado -->
+      <div id="workout-day-content"></div>
+
+      <!-- Botão de regras de progressão -->
+      <button id="btn-progression-info">ℹ️ Regras de Progressão</button>
+
+      <!-- Botão finalizar treino -->
+      <button class="btn btn-success btn-full" id="btn-finish-workout">
+        ✅ Finalizar Treino
+      </button>
+    </section>
+
+    <!-- ===== TELA 3: HISTÓRICO ===== -->
+    <section id="screen-historico" class="screen">
+      <p class="section-title">Histórico</p>
+
+      <!-- Gráfico de peso corporal -->
+      <div class="card">
+        <div class="card-title">EVOLUÇÃO DO PESO (kg)</div>
+        <div class="weight-chart-wrap">
+          <svg id="weight-chart-svg" height="160" viewBox="0 0 400 160" preserveAspectRatio="xMidYMid meet">
+            <text x="200" y="90" text-anchor="middle" fill="#64748b" font-size="13">Sem dados ainda</text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Recordes pessoais -->
+      <div class="card">
+        <div class="card-title">RECORDES PESSOAIS 🏆</div>
+        <div id="pr-table-wrap">
+          <div class="empty-state"><div class="empty-icon">🏋️</div>Nenhum recorde ainda</div>
+        </div>
+      </div>
+
+      <!-- Log de treinos -->
+      <div class="card">
+        <div class="card-title">TREINOS REALIZADOS</div>
+        <div id="workout-log-list">
+          <div class="empty-state"><div class="empty-icon">📋</div>Nenhum treino registrado ainda</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== TELA 4: DIETA ===== -->
+    <section id="screen-dieta" class="screen">
+      <p class="section-title">Dieta do Dia</p>
+
+      <!-- Checklist diário -->
+      <div class="card">
+        <div class="card-title">CHECKLIST DE HOJE</div>
+        <div class="diet-checklist" id="diet-checklist">
+          <div class="diet-check-item" data-key="proteina" onclick="toggleDietCheck(this)">
+            <div class="diet-checkbox" id="dc-proteina"></div>
+            <span class="diet-check-text">Bati a meta de proteína? (150-170g)</span>
+          </div>
+          <div class="diet-check-item" data-key="creatina" onclick="toggleDietCheck(this)">
+            <div class="diet-checkbox" id="dc-creatina"></div>
+            <span class="diet-check-text">Tomei creatina? (3-5g)</span>
+          </div>
+          <div class="diet-check-item" data-key="agua" onclick="toggleDietCheck(this)">
+            <div class="diet-checkbox" id="dc-agua"></div>
+            <span class="diet-check-text">Bebi água suficiente? (2.5-3.5L)</span>
+          </div>
+          <div class="diet-check-item" data-key="pretreino" onclick="toggleDietCheck(this)">
+            <div class="diet-checkbox" id="dc-pretreino"></div>
+            <span class="diet-check-text">Fiz refeição pré-treino?</span>
+          </div>
+          <div class="diet-check-item" data-key="frutas" onclick="toggleDietCheck(this)">
+            <div class="diet-checkbox" id="dc-frutas"></div>
+            <span class="diet-check-text">Comi frutas ou legumes?</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Metas do dia -->
+      <div class="card-title" style="margin-bottom:8px">METAS DIÁRIAS</div>
+      <div class="daily-targets-strip">
+        <div class="target-item">
+          <div class="target-val">2900-3200</div>
+          <div class="target-lbl">kcal</div>
+        </div>
+        <div class="target-item">
+          <div class="target-val">150-170g</div>
+          <div class="target-lbl">proteína</div>
+        </div>
+        <div class="target-item">
+          <div class="target-val">3-5g</div>
+          <div class="target-lbl">creatina</div>
+        </div>
+        <div class="target-item">
+          <div class="target-val">2.5-3.5L</div>
+          <div class="target-lbl">água</div>
+        </div>
+      </div>
+
+      <!-- Plano de refeições -->
+      <div class="card-title" style="margin:16px 0 8px">PLANO DE REFEIÇÕES</div>
+
+      <!-- Café da manhã -->
+      <div class="meal-accordion">
+        <button class="meal-toggle" onclick="toggleMeal(this)">
+          <span><span class="meal-icon">☀️</span> Café da Manhã</span>
+          <span class="arrow">▾</span>
+        </button>
+        <div class="meal-body">
+          <ul>
+            <li>2 ovos inteiros + 3 claras (mexidos ou fritos)</li>
+            <li>2 pães franceses OU 4 fatias de pão de forma</li>
+            <li>1 banana</li>
+            <li>Creatina 3-5g misturada na bebida</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Almoço -->
+      <div class="meal-accordion">
+        <button class="meal-toggle" onclick="toggleMeal(this)">
+          <span><span class="meal-icon">🍽️</span> Almoço</span>
+          <span class="arrow">▾</span>
+        </button>
+        <div class="meal-body">
+          <ul>
+            <li>180-220g de frango pronto (250-300g cru)</li>
+            <li>Arroz + feijão à vontade</li>
+            <li>Salada / legumes à vontade</li>
+            <li>Azeite de oliva</li>
+            <li>1 fruta da estação</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Pré-treino -->
+      <div class="meal-accordion">
+        <button class="meal-toggle" onclick="toggleMeal(this)">
+          <span><span class="meal-icon">⚡</span> Pré-treino / Lanche</span>
+          <span class="arrow">▾</span>
+        </button>
+        <div class="meal-body">
+          <ul>
+            <li><strong>Opção 1:</strong> banana + aveia + mel + leite</li>
+            <li><strong>Opção 2:</strong> pão + ovos ou frango desfiado</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Jantar -->
+      <div class="meal-accordion">
+        <button class="meal-toggle" onclick="toggleMeal(this)">
+          <span><span class="meal-icon">🌙</span> Jantar</span>
+          <span class="arrow">▾</span>
+        </button>
+        <div class="meal-body">
+          <ul>
+            <li>150-200g de frango/carne/peixe pronto</li>
+            <li>Arroz, batata, mandioca ou macarrão</li>
+            <li>Legumes variados</li>
+            <li>Feijão (opcional)</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Ceia -->
+      <div class="meal-accordion">
+        <button class="meal-toggle" onclick="toggleMeal(this)">
+          <span><span class="meal-icon">🌛</span> Ceia (opcional)</span>
+          <span class="arrow">▾</span>
+        </button>
+        <div class="meal-body">
+          <ul>
+            <li>Leite + aveia</li>
+            <li>OU iogurte natural + banana + aveia</li>
+            <li>OU 2 ovos + pão</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Registro de peso semanal -->
+      <div class="card mt-16">
+        <div class="card-title">PESO SEMANAL</div>
+        <div class="weight-input-row">
+          <input type="number" id="diet-weight-input" placeholder="Ex: 77.5" step="0.1" min="40" max="200" />
+          <button class="btn btn-ghost" id="btn-save-weight-diet">Salvar</button>
+        </div>
+      </div>
+
+      <!-- Rastreador de sono -->
+      <div class="card">
+        <div class="card-title">SONO DE HOJE</div>
+        <p style="font-size:14px;color:var(--text-secondary);margin-bottom:8px">Dormiu 7 horas ou mais?</p>
+        <div class="sleep-row">
+          <button class="sleep-btn" id="sleep-yes" onclick="setSleep(true)">✅ Sim (+20 XP)</button>
+          <button class="sleep-btn" id="sleep-no" onclick="setSleep(false)">❌ Não</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== TELA 5: POSTURA ===== -->
+    <section id="screen-postura" class="screen">
+      <p class="section-title">Rotina Postural — 10 min</p>
+
+      <div class="postura-streak">
+        <span class="streak-icon">🔥</span>
+        <span class="streak-text" id="postura-streak-text">Sequência postural: 0 dias</span>
+      </div>
+
+      <div class="postura-header-text">
+        Nattan, você tem tendência à cifose torácica (postura de computador), rotação de tronco e assimetria no ombro direito — que fica mais baixo e com o peitoral direito visivelmente menor. Esta rotina de 10 minutos ativa os músculos posturais corretos, alonga o peitoral encurtado e estabiliza o core para corrigir essas compensações ao longo do tempo.
+      </div>
+
+      <!-- Exercícios posturais -->
+      <div id="postura-exercises-list"></div>
+
+      <!-- Botão completar rotina -->
+      <button class="btn btn-success btn-full" id="btn-complete-postura" style="margin-top:8px">
+        ✅ Completar Rotina (+30 XP)
+      </button>
+    </section>
+
+  </main>
+
+  <!-- ========== NAVEGAÇÃO INFERIOR ========== -->
+  <nav id="bottom-nav">
+    <button class="nav-btn active" data-screen="dashboard" onclick="navigateTo('dashboard')">
+      <span class="nav-icon">🏠</span>
+      <span class="nav-label">Dashboard</span>
+    </button>
+    <button class="nav-btn" data-screen="treino" onclick="navigateTo('treino')">
+      <span class="nav-icon">💪</span>
+      <span class="nav-label">Treino</span>
+    </button>
+    <button class="nav-btn" data-screen="historico" onclick="navigateTo('historico')">
+      <span class="nav-icon">📊</span>
+      <span class="nav-label">Histórico</span>
+    </button>
+    <button class="nav-btn" data-screen="dieta" onclick="navigateTo('dieta')">
+      <span class="nav-icon">🥗</span>
+      <span class="nav-label">Dieta</span>
+    </button>
+    <button class="nav-btn" data-screen="postura" onclick="navigateTo('postura')">
+      <span class="nav-icon">🧘</span>
+      <span class="nav-label">Postura</span>
+    </button>
+  </nav>
+
+  <!-- ========== REST TIMER OVERLAY ========== -->
+  <div id="rest-timer-overlay">
+    <div class="timer-exercise-name" id="timer-exercise-name">Descansando...</div>
+    <div class="timer-ring-wrap">
+      <svg id="timer-svg" width="120" height="120" viewBox="0 0 120 120">
+        <circle cx="60" cy="60" r="54" fill="none" stroke="#334155" stroke-width="8"/>
+        <circle id="timer-ring" cx="60" cy="60" r="54" fill="none"
+          stroke="#3b82f6" stroke-width="8"
+          stroke-dasharray="339.29" stroke-dashoffset="0"
+          stroke-linecap="round"/>
+      </svg>
+      <div class="timer-number" id="timer-display">90</div>
+    </div>
+    <div class="timer-buttons">
+      <button id="btn-skip-timer" onclick="skipTimer()">Pular</button>
+      <button id="btn-add-timer" onclick="addTimerSeconds(30)">+30s</button>
+    </div>
+  </div>
+
+  <!-- ========== TOAST CONTAINER ========== -->
+  <div id="toast-container"></div>
+
+  <!-- ========== MODAL: TREINO CONCLUÍDO ========== -->
+  <div id="workout-complete-modal">
+    <div class="modal-box">
+      <h2>🎉 Treino Concluído!</h2>
+      <div id="modal-stats-content"></div>
+      <button class="btn btn-primary btn-full" onclick="closeWorkoutModal()">Confirmar e Salvar</button>
+    </div>
+  </div>
+
+  <!-- ========== MODAL: CONFIGURAÇÕES ========== -->
+  <div id="settings-modal" onclick="closeSettingsIfOutside(event)">
+    <div class="settings-sheet">
+      <h2>⚙️ Configurações</h2>
+
+      <div class="settings-item">
+        <div>
+          <div class="settings-label">Exportar Dados</div>
+          <div class="settings-desc">Baixar backup JSON completo</div>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="exportData()">Exportar</button>
+      </div>
+
+      <div class="settings-item">
+        <div>
+          <div class="settings-label">Importar Dados</div>
+          <div class="settings-desc">Restaurar a partir de backup</div>
+        </div>
+        <label class="btn btn-ghost btn-sm" style="cursor:pointer">
+          Importar
+          <input type="file" id="import-file-input" accept=".json" style="display:none" onchange="importData(event)" />
+        </label>
+      </div>
+
+      <div class="settings-item">
+        <div>
+          <div class="settings-label">Resetar Dados</div>
+          <div class="settings-desc">Apaga tudo e começa do zero</div>
+        </div>
+        <button class="btn btn-danger btn-sm" onclick="resetData()">Resetar</button>
+      </div>
+
+      <div class="settings-item">
+        <div>
+          <div class="settings-label">Versão</div>
+          <div class="settings-desc">NattanFit v1.0.0</div>
+        </div>
+      </div>
+
+      <button class="btn btn-ghost btn-full mt-16" onclick="closeSettings()">Fechar</button>
+    </div>
+  </div>
+
+  <!-- ========== MODAL: PROGRESSÃO ========== -->
+  <div id="progression-modal" onclick="closeProgressionIfOutside(event)">
+    <div class="modal-box">
+      <h2>📈 Regras de Progressão</h2>
+      <div class="progression-content">
+        <h3>Progressão Dupla</h3>
+        <p>Você só aumenta a carga quando conseguir o número máximo de repetições em TODAS as séries com boa execução.</p>
+
+        <h3>Exemplo: 4x8-10</h3>
+        <p>✅ 10/10/10/10 → sobe a carga na próxima sessão</p>
+        <p>⏸️ 10/9/8/8 → mantém a carga até dominar</p>
+        <p>⬇️ Abaixo do mínimo → reduz ou mantém até dominar</p>
+
+        <h3>Quanto aumentar?</h3>
+        <p>• Compostos (agachamento, terra, supino): +2 a 5kg total</p>
+        <p>• Halteres: +1 a 2kg por halter (ex: de 14kg para 15kg cada)</p>
+        <p>• Isoladores e cabos: aumenta devagar, prioriza execução limpa</p>
+
+        <h3>Exercícios Unilaterais</h3>
+        <p>Sempre começa pelo lado direito (ombro mais fraco). Se houver diferença de força, use a carga do lado mais fraco para os dois lados até equalizar.</p>
+
+        <h3>Dica Postural</h3>
+        <p>Para o crucifixo e crossover unilateral, use espelho ou vídeo para verificar se os dois lados estão com amplitude igual. O lado direito tende a compensar com o ombro.</p>
+      </div>
+      <button class="btn btn-ghost btn-full mt-16" onclick="closeProgression()">Fechar</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
